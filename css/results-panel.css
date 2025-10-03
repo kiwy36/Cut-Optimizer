@@ -1,0 +1,118 @@
+/* Estilos específicos para el panel de resultados */
+
+.results-panel {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Contenedor de resultados estadísticos */
+.results-container {
+    margin-bottom: 1.5rem;
+}
+
+.results-summary {
+    background-color: #dbeafe;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border-left: 4px solid var(--primary-color);
+}
+
+.results-summary h3 {
+    font-weight: 600;
+    font-size: 1.125rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.25rem 0;
+}
+
+.stat-value {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+/* Contenedor de placas visualizadas */
+.sheets-container {
+    max-height: 600px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+/* Estilos para la barra de desplazamiento */
+.sheets-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sheets-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.sheets-container::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.sheets-container::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Tarjeta individual de placa */
+.sheet-card {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    background-color: #fafafa;
+}
+
+.sheet-title {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+    font-size: 1.1rem;
+}
+
+.sheet-visualization {
+    margin: 0 auto;
+    position: relative;
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), 
+                linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #f0f0f0 75%), 
+                linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+}
+
+/* Estado cuando no hay resultados */
+.no-results {
+    text-align: center;
+    color: #6b7280;
+    font-style: italic;
+    padding: 2rem;
+}
+
+/* Indicadores de eficiencia */
+.efficiency-high {
+    color: var(--success-color);
+}
+
+.efficiency-medium {
+    color: #f59e0b;
+}
+
+.efficiency-low {
+    color: var(--danger-color);
+}

@@ -4,42 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cut Optimizer - Optimizador de Cortes</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .piece {
-            position: absolute;
-            border: 1px solid #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            overflow: hidden;
-            box-sizing: border-box;
-        }
-        .sheet {
-            position: relative;
-            background-color: #f0f0f0;
-            border: 1px solid #333;
-            margin-bottom: 20px;
-        }
-        .waste {
-            background-color: #ffcccc;
-        }
-    </style>
+    
+    <!-- CSS personalizado -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/input-panel.css">
+    <link rel="stylesheet" href="css/results-panel.css">
 </head>
 <body class="bg-gray-100">
     <div class="container mx-auto px-4 py-8">
+        <!-- Header de la aplicación -->
         <header class="text-center mb-8">
             <h1 class="text-3xl font-bold text-blue-700">Cut Optimizer</h1>
             <p class="text-gray-600">Optimizador de cortes para carpintería y metalmecánica</p>
         </header>
 
+        <!-- Layout principal de dos columnas -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <!-- Panel de entrada -->
-            <div class="bg-white p-6 rounded-lg shadow-md">
+            
+            <!-- Panel de entrada de datos -->
+            <div id="inputPanel" class="input-panel">
                 <h2 class="text-xl font-semibold mb-4">Configuración de la placa</h2>
                 
-                <div class="mb-6">
+                <div class="sheet-config mb-6">
                     <label class="block text-gray-700 mb-2">Tamaño de la placa (mm)</label>
                     <div class="flex space-x-4">
                         <div class="flex-1">
@@ -55,8 +44,8 @@
 
                 <h2 class="text-xl font-semibold mb-4">Piezas a cortar</h2>
                 
-                <div class="mb-4">
-                    <div class="grid grid-cols-5 gap-2 mb-2 text-sm font-medium">
+                <div class="pieces-container">
+                    <div class="pieces-header grid grid-cols-5 gap-2 mb-2 text-sm font-medium">
                         <div>Ancho (mm)</div>
                         <div>Alto (mm)</div>
                         <div>Cantidad</div>
@@ -66,242 +55,37 @@
                     <div id="piecesContainer">
                         <!-- Las piezas se agregarán aquí dinámicamente -->
                     </div>
-                    <button id="addPiece" class="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                    <button id="addPiece" class="add-piece-btn">
                         + Agregar pieza
                     </button>
                 </div>
 
-                <div class="mt-6">
-                    <button id="optimizeBtn" class="w-full bg-green-500 text-white py-3 rounded-lg font-semibold hover:bg-green-600">
+                <div class="optimize-section mt-6">
+                    <button id="optimizeBtn" class="optimize-btn">
                         Optimizar Cortes
                     </button>
                 </div>
             </div>
 
-            <!-- Resultados -->
-            <div class="bg-white p-6 rounded-lg shadow-md">
+            <!-- Panel de resultados -->
+            <div id="resultsPanel" class="results-panel">
                 <h2 class="text-xl font-semibold mb-4">Resultados de optimización</h2>
                 
-                <div id="resultsContainer" class="mb-4">
+                <div id="resultsContainer" class="results-container">
                     <p class="text-gray-600">Ingresa las piezas y haz clic en "Optimizar Cortes"</p>
                 </div>
                 
-                <div id="sheetsContainer" class="mt-4">
+                <div id="sheetsContainer" class="sheets-container">
                     <!-- Las placas optimizadas se mostrarán aquí -->
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
-        // Variables globales
-        let pieces = [];
-        let currentPieceId = 0;
-
-        // Inicialización
-        document.addEventListener('DOMContentLoaded', function() {
-            // Agregar primera pieza por defecto
-            addPiece();
-            
-            // Event listeners
-            document.getElementById('addPiece').addEventListener('click', addPiece);
-            document.getElementById('optimizeBtn').addEventListener('click', optimizeCuts);
-        });
-
-        // Función para agregar una nueva pieza
-        function addPiece() {
-            const piecesContainer = document.getElementById('piecesContainer');
-            const pieceId = currentPieceId++;
-            
-            const pieceDiv = document.createElement('div');
-            pieceDiv.className = 'grid grid-cols-5 gap-2 mb-2';
-            pieceDiv.innerHTML = `
-                <input type="number" class="p-2 border rounded piece-width" value="300" min="1">
-                <input type="number" class="p-2 border rounded piece-height" value="200" min="1">
-                <input type="number" class="p-2 border rounded piece-quantity" value="1" min="1">
-                <input type="color" class="p-1 border rounded piece-color" value="${getRandomColor()}">
-                <button class="bg-red-500 text-white px-2 py-1 rounded remove-piece" data-id="${pieceId}">✕</button>
-            `;
-            
-            piecesContainer.appendChild(pieceDiv);
-            
-            // Event listener para eliminar pieza
-            pieceDiv.querySelector('.remove-piece').addEventListener('click', function() {
-                piecesContainer.removeChild(pieceDiv);
-            });
-        }
-
-        // Función para generar un color aleatorio
-        function getRandomColor() {
-            const letters = '0123456789ABCDEF';
-            let color = '#';
-            for (let i = 0; i < 6; i++) {
-                color += letters[Math.floor(Math.random() * 16)];
-            }
-            return color;
-        }
-
-        // Función principal de optimización
-        function optimizeCuts() {
-            // Obtener datos de entrada
-            const sheetWidth = parseInt(document.getElementById('sheetWidth').value);
-            const sheetHeight = parseInt(document.getElementById('sheetHeight').value);
-            
-            // Recopilar piezas
-            pieces = [];
-            const pieceElements = document.querySelectorAll('#piecesContainer > div');
-            
-            pieceElements.forEach(element => {
-                const width = parseInt(element.querySelector('.piece-width').value);
-                const height = parseInt(element.querySelector('.piece-height').value);
-                const quantity = parseInt(element.querySelector('.piece-quantity').value);
-                const color = element.querySelector('.piece-color').value;
-                
-                for (let i = 0; i < quantity; i++) {
-                    pieces.push({
-                        width: width,
-                        height: height,
-                        color: color,
-                        id: pieces.length
-                    });
-                }
-            });
-            
-            // Ordenar piezas por área (de mayor a menor)
-            pieces.sort((a, b) => (b.width * b.height) - (a.width * a.height));
-            
-            // Aplicar algoritmo de optimización (shelf algorithm)
-            const sheets = shelfAlgorithm(pieces, sheetWidth, sheetHeight);
-            
-            // Mostrar resultados
-            displayResults(sheets, sheetWidth, sheetHeight);
-        }
-
-        // Algoritmo de optimización (Shelf Algorithm)
-        function shelfAlgorithm(pieces, sheetWidth, sheetHeight) {
-            const sheets = [];
-            let currentSheet = {
-                pieces: [],
-                usedArea: 0
-            };
-            
-            let currentY = 0;
-            let currentX = 0;
-            let currentRowHeight = 0;
-            
-            for (const piece of pieces) {
-                // Si la pieza no cabe en la fila actual, empezar nueva fila
-                if (currentX + piece.width > sheetWidth) {
-                    currentY += currentRowHeight;
-                    currentX = 0;
-                    currentRowHeight = 0;
-                }
-                
-                // Si la pieza no cabe en la placa actual, usar nueva placa
-                if (currentY + piece.height > sheetHeight) {
-                    sheets.push(currentSheet);
-                    currentSheet = {
-                        pieces: [],
-                        usedArea: 0
-                    };
-                    currentY = 0;
-                    currentX = 0;
-                    currentRowHeight = 0;
-                }
-                
-                // Colocar pieza
-                currentSheet.pieces.push({
-                    ...piece,
-                    x: currentX,
-                    y: currentY
-                });
-                
-                currentSheet.usedArea += piece.width * piece.height;
-                currentX += piece.width;
-                
-                if (piece.height > currentRowHeight) {
-                    currentRowHeight = piece.height;
-                }
-            }
-            
-            // Agregar la última placa
-            if (currentSheet.pieces.length > 0) {
-                sheets.push(currentSheet);
-            }
-            
-            return sheets;
-        }
-
-        // Mostrar resultados
-        function displayResults(sheets, sheetWidth, sheetHeight) {
-            const resultsContainer = document.getElementById('resultsContainer');
-            const sheetsContainer = document.getElementById('sheetsContainer');
-            
-            // Calcular estadísticas
-            const totalSheets = sheets.length;
-            const totalArea = totalSheets * sheetWidth * sheetHeight;
-            let usedArea = 0;
-            
-            sheets.forEach(sheet => {
-                usedArea += sheet.usedArea;
-            });
-            
-            const wasteArea = totalArea - usedArea;
-            const efficiency = (usedArea / totalArea * 100).toFixed(2);
-            
-            // Mostrar estadísticas
-            resultsContainer.innerHTML = `
-                <div class="bg-blue-50 p-4 rounded-lg">
-                    <h3 class="font-semibold text-lg mb-2">Resumen de optimización</h3>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>Placas utilizadas:</div>
-                        <div class="font-medium">${totalSheets}</div>
-                        <div>Área utilizada:</div>
-                        <div class="font-medium">${usedArea.toLocaleString()} mm²</div>
-                        <div>Desperdicio:</div>
-                        <div class="font-medium">${wasteArea.toLocaleString()} mm²</div>
-                        <div>Eficiencia:</div>
-                        <div class="font-medium">${efficiency}%</div>
-                    </div>
-                </div>
-            `;
-            
-            // Mostrar placas
-            sheetsContainer.innerHTML = '';
-            
-            sheets.forEach((sheet, index) => {
-                const sheetDiv = document.createElement('div');
-                sheetDiv.className = 'mb-6';
-                
-                const sheetTitle = document.createElement('h3');
-                sheetTitle.className = 'font-semibold mb-2';
-                sheetTitle.textContent = `Placa ${index + 1}`;
-                
-                const sheetCanvas = document.createElement('div');
-                sheetCanvas.className = 'sheet mx-auto';
-                sheetCanvas.style.width = '100%';
-                sheetCanvas.style.maxWidth = '500px';
-                sheetCanvas.style.height = `${(sheetHeight / sheetWidth) * 500}px`;
-                
-                // Dibujar piezas en la placa
-                sheet.pieces.forEach(piece => {
-                    const pieceDiv = document.createElement('div');
-                    pieceDiv.className = 'piece';
-                    pieceDiv.style.width = `${(piece.width / sheetWidth) * 100}%`;
-                    pieceDiv.style.height = `${(piece.height / sheetHeight) * 100}%`;
-                    pieceDiv.style.left = `${(piece.x / sheetWidth) * 100}%`;
-                    pieceDiv.style.top = `${(piece.y / sheetHeight) * 100}%`;
-                    pieceDiv.style.backgroundColor = piece.color;
-                    pieceDiv.title = `${piece.width} x ${piece.height} mm`;
-                    
-                    sheetCanvas.appendChild(pieceDiv);
-                });
-                
-                sheetDiv.appendChild(sheetTitle);
-                sheetDiv.appendChild(sheetCanvas);
-                sheetsContainer.appendChild(sheetDiv);
-            });
-        }
-    </script>
+    <!-- Scripts de la aplicación -->
+    <script src="js/piece-manager.js"></script>
+    <script src="js/optimizer.js"></script>
+    <script src="js/renderer.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>

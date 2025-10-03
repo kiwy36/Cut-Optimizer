@@ -1,0 +1,64 @@
+/* Estilos principales y comunes de la aplicación */
+
+/* Variables CSS para colores y dimensiones */
+:root {
+    --primary-color: #3b82f6;
+    --primary-hover: #2563eb;
+    --success-color: #10b981;
+    --success-hover: #059669;
+    --danger-color: #ef4444;
+    --danger-hover: #dc2626;
+    --border-color: #d1d5db;
+    --bg-color: #f3f4f6;
+    --text-color: #374151;
+}
+
+/* Estilos base para elementos comunes */
+.container {
+    max-width: 1200px;
+}
+
+/* Estilos para elementos de pieza en las placas */
+.piece {
+    position: absolute;
+    border: 1px solid #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    overflow: hidden;
+    box-sizing: border-box;
+    transition: transform 0.2s ease;
+}
+
+.piece:hover {
+    transform: scale(1.02);
+    z-index: 10;
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
+}
+
+/* Estilos para representar placas */
+.sheet {
+    position: relative;
+    background-color: #f8f9fa;
+    border: 2px solid #333;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Áreas de desperdicio */
+.waste {
+    background-color: #ffe4e6;
+    opacity: 0.7;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    .piece {
+        font-size: 8px;
+    }
+}
