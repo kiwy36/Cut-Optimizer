@@ -111,3 +111,221 @@
     background-color: #9ca3af;
     cursor: not-allowed;
 }
+/* MEJORAS RESPONSIVAS PARA EL PANEL */
+@media (max-width: 768px) {
+    .results-panel {
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+}
+
+/* Contenedor de resultados estadísticos */
+.results-container {
+    margin-bottom: 1.5rem;
+}
+
+.results-summary {
+    background-color: #dbeafe;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border-left: 4px solid var(--primary-color);
+}
+
+.results-summary h3 {
+    font-weight: 600;
+    font-size: 1.125rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+}
+
+/* MEJORAS RESPONSIVAS PARA ESTADÍSTICAS */
+@media (max-width: 640px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 0.25rem;
+    }
+    
+    .results-summary {
+        padding: 0.75rem;
+    }
+    
+    .results-summary h3 {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .stat-item {
+        font-size: 0.9rem;
+    }
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.25rem 0;
+}
+
+.stat-value {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+/* Contenedor de placas visualizadas */
+.sheets-container {
+    max-height: 600px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+/* MEJORAS RESPONSIVAS PARA CONTENEDOR DE PLACAS */
+@media (max-width: 768px) {
+    .sheets-container {
+        max-height: 500px;
+        padding-right: 0.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .sheets-container {
+        max-height: 400px;
+    }
+}
+
+/* Estilos para la barra de desplazamiento */
+.sheets-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sheets-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.sheets-container::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.sheets-container::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Tarjeta individual de placa */
+.sheet-card {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    background-color: #fafafa;
+}
+
+/* MEJORAS RESPONSIVAS PARA TARJETAS DE PLACA */
+@media (max-width: 768px) {
+    .sheet-card {
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+    }
+}
+
+.sheet-title {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+    font-size: 1.1rem;
+}
+
+/* MEJORAS RESPONSIVAS PARA TÍTULOS */
+@media (max-width: 480px) {
+    .sheet-title {
+        font-size: 1rem;
+        text-align: center;
+    }
+}
+
+.sheet-visualization {
+    margin: 0 auto;
+    position: relative;
+    background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), 
+                linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #f0f0f0 75%), 
+                linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    max-width: 100%; /* Importante para responsivo */
+}
+
+/* MEJORAS CRÍTICAS PARA VISUALIZACIÓN DE PLACAS */
+@media (max-width: 768px) {
+    .sheet-visualization {
+        width: 100% !important; /* Forzar ancho completo */
+        height: auto !important; /* Altura automática */
+        aspect-ratio: 2440/1220; /* Mantener proporción de la placa */
+        max-width: 400px; /* Límite máximo */
+    }
+    
+    /* Ajustar piezas para pantallas pequeñas */
+    .sheet-visualization .piece {
+        font-size: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .sheet-visualization {
+        max-width: 300px;
+    }
+    
+    .sheet-visualization .piece {
+        font-size: 5px;
+    }
+}
+
+/* Estado cuando no hay resultados */
+.no-results {
+    text-align: center;
+    color: #6b7280;
+    font-style: italic;
+    padding: 2rem;
+}
+
+/* MEJORAS RESPONSIVAS PARA ESTADO VACÍO */
+@media (max-width: 768px) {
+    .no-results {
+        padding: 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Indicadores de eficiencia */
+.efficiency-high {
+    color: var(--success-color);
+}
+
+.efficiency-medium {
+    color: #f59e0b;
+}
+
+.efficiency-low {
+    color: var(--danger-color);
+}
+
+/* Utilidad para ocultar/mostrar elementos en diferentes breakpoints */
+.mobile-only {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .mobile-only {
+        display: block;
+    }
+    
+    .desktop-only {
+        display: none;
+    }
+}

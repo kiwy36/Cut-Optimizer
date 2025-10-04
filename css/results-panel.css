@@ -116,3 +116,149 @@
 .efficiency-low {
     color: var(--danger-color);
 }
+/* MEJORAS RESPONSIVAS CRÍTICAS PARA FILAS DE PIEZAS */
+@media (max-width: 1024px) {
+    .piece-row {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.25rem;
+    }
+    
+    .piece-row .remove-piece {
+        grid-column: span 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .piece-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        border: 1px solid var(--border-color);
+        border-radius: 0.375rem;
+        margin-bottom: 0.75rem;
+        background: #f9fafb;
+    }
+    
+    .piece-row input {
+        width: 100%;
+    }
+    
+    /* Añadir labels para mejor usabilidad en móvil */
+    .piece-row::before {
+        content: "Pieza";
+        grid-column: 1 / -1;
+        font-weight: 600;
+        color: var(--text-color);
+        font-size: 0.875rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .piece-width::before {
+        content: "Ancho";
+        display: block;
+        font-size: 0.75rem;
+        color: #6b7280;
+        margin-bottom: 0.125rem;
+    }
+    
+    .piece-height::before {
+        content: "Alto";
+        display: block;
+        font-size: 0.75rem;
+        color: #6b7280;
+        margin-bottom: 0.125rem;
+    }
+    
+    .piece-quantity::before {
+        content: "Cant.";
+        display: block;
+        font-size: 0.75rem;
+        color: #6b7280;
+        margin-bottom: 0.125rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .piece-row {
+        grid-template-columns: 1fr;
+        gap: 0.25rem;
+    }
+    
+    .input-panel {
+        padding: 1rem;
+    }
+}
+
+.piece-row input {
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.25rem;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 1rem; /* Mejor legibilidad en móvil */
+}
+
+.piece-row input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* Botón de eliminar pieza */
+.remove-piece {
+    background-color: var(--danger-color);
+    color: white;
+    border: none;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-size: 1rem;
+    min-height: 44px; /* Tamaño mínimo touch */
+}
+
+.remove-piece:hover {
+    background-color: var(--danger-hover);
+}
+
+/* Sección de optimización */
+.optimize-section {
+    border-top: 1px solid var(--border-color);
+    padding-top: 1rem;
+}
+
+.optimize-btn {
+    background-color: var(--success-color);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    width: 100%;
+    transition: background-color 0.2s ease;
+    font-size: 1.1rem;
+    min-height: 50px; /* Tamaño touch adecuado */
+}
+
+.optimize-btn:hover {
+    background-color: var(--success-hover);
+}
+
+.optimize-btn:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+}
+
+/* Mejoras de touch para móviles */
+@media (max-width: 768px) {
+    .add-piece-btn,
+    .optimize-btn,
+    .remove-piece {
+        min-height: 44px; /* Tamaño mínimo recomendado para touch */
+    }
+    
+    .optimize-btn {
+        font-size: 1.2rem; /* Más grande en móviles */
+        padding: 1rem 1.5rem;
+    }
+}

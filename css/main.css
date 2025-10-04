@@ -52,13 +52,56 @@
     opacity: 0.7;
 }
 
-/* Responsive adjustments */
+/* RESPONSIVE ADJUSTMENTS - MEJORADO */
 @media (max-width: 768px) {
     .container {
-        padding: 1rem;
+        padding: 0.5rem;
     }
     
     .piece {
         font-size: 8px;
+    }
+    
+    /* Mejorar legibilidad en móviles */
+    body {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0.25rem;
+    }
+    
+    /* Ajustes extra para móviles muy pequeños */
+    .piece {
+        font-size: 7px;
+    }
+}
+
+/* Utilidades responsivas adicionales */
+.mobile-stack {
+    display: flex;
+    flex-direction: column;
+}
+
+@media (min-width: 769px) {
+    .mobile-stack {
+        flex-direction: row;
+    }
+}
+
+/* Mejoras de touch para dispositivos móviles */
+@media (hover: none) {
+    .piece:hover {
+        transform: none;
+        box-shadow: none;
+    }
+    
+    .add-piece-btn:active,
+    .optimize-btn:active,
+    .remove-piece:active {
+        transform: scale(0.98);
+        opacity: 0.8;
     }
 }
