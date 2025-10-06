@@ -9,42 +9,60 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- CSS personalizado -->
+    <!-- main.css → Estilos globales y comunes a toda la aplicación -->
     <link rel="stylesheet" href="css/main.css">
+    <!-- input-panel.css → Estilos específicos del panel izquierdo (entrada de datos) -->
     <link rel="stylesheet" href="css/input-panel.css">
+    <!-- results-panel.css → Estilos específicos del panel derecho (resultados) -->
     <link rel="stylesheet" href="css/results-panel.css">
 </head>
 <body class="bg-gray-100">
     <div class="container mx-auto px-4 py-8">
         <!-- Header de la aplicación -->
+        <!-- main.css → Estilos del header y títulos -->
         <header class="text-center mb-8">
             <h1 class="text-3xl font-bold text-blue-700">Cut Optimizer</h1>
             <p class="text-gray-600">Optimizador de cortes para carpintería y metalmecánica</p>
         </header>
 
         <!-- Layout principal de dos columnas -->
+        <!-- main.css → Grid responsivo y contenedores -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             
-            <!-- Panel de entrada de datos -->
+            <!-- =========================================================== -->
+            <!-- PANEL DE ENTRADA DE DATOS -->
+            <!-- =========================================================== -->
+            <!-- input-panel.css → Todos los estilos de este panel -->
             <div id="inputPanel" class="input-panel">
+                
+                <!-- CONFIGURACIÓN DE PLACA -->
+                <!-- piece-manager.js → Lee estos valores para la optimización -->
                 <h2 class="text-xl font-semibold mb-4">Configuración de la placa</h2>
                 
                 <div class="sheet-config mb-6">
                     <label class="block text-gray-700 mb-2">Tamaño de la placa (mm)</label>
                     <div class="flex space-x-4">
                         <div class="flex-1">
+                            <!-- app.js → Obtiene este valor en handleOptimize() -->
+                            <!-- optimizer.js → Usa este valor para calcular disposición -->
                             <input type="number" id="sheetWidth" value="2440" class="w-full p-2 border rounded">
                             <span class="text-sm text-gray-500">Ancho</span>
                         </div>
                         <div class="flex-1">
+                            <!-- app.js → Obtiene este valor en handleOptimize() -->
+                            <!-- optimizer.js → Usa este valor para calcular disposición -->
                             <input type="number" id="sheetHeight" value="1220" class="w-full p-2 border rounded">
                             <span class="text-sm text-gray-500">Alto</span>
                         </div>
                     </div>
                 </div>
 
+                <!-- GESTIÓN DE PIEZAS -->
+                <!-- piece-manager.js → Controla completamente esta sección -->
                 <h2 class="text-xl font-semibold mb-4">Piezas a cortar</h2>
                 
                 <div class="pieces-container">
+                    <!-- input-panel.css → Estilos del header de la tabla -->
                     <div class="pieces-header grid grid-cols-5 gap-2 mb-2 text-sm font-medium">
                         <div>Ancho (mm)</div>
                         <div>Alto (mm)</div>
@@ -52,14 +70,41 @@
                         <div>Color</div>
                         <div></div>
                     </div>
+                    
+                    <!-- =========================================================== -->
+                    <!-- ZONA DINÁMICA - GESTIONADA POR piece-manager.js -->
+                    <!-- =========================================================== -->
+                    <!-- piece-manager.js → addPiece() agrega filas aquí -->
+                    <!-- piece-manager.js → removePiece() elimina filas aquí -->
+                    <!-- piece-manager.js → getAllPieces() lee los valores de aquí -->
                     <div id="piecesContainer">
-                        <!-- Las piezas se agregarán aquí dinámicamente -->
+                        <!-- 
+                        ESTRUCTURA QUE SE INSERTA DINÁMICAMENTE:
+                        <div class="piece-row">
+                            <input type="number" class="piece-width" value="300">
+                            <input type="number" class="piece-height" value="200">
+                            <input type="number" class="piece-quantity" value="1">
+                            <input type="color" class="piece-color" value="#FF5733">
+                            <button class="remove-piece" data-id="0">✕</button>
+                        </div>
+                        -->
                     </div>
+                    
+                    <!-- =========================================================== -->
+                    <!-- BOTÓN AGREGAR PIEZA - MANEJADO POR app.js -->
+                    <!-- =========================================================== -->
+                    <!-- app.js → Event listener en setupEventListeners() -->
+                    <!-- piece-manager.js → addPiece() se ejecuta al hacer clic -->
                     <button id="addPiece" class="add-piece-btn">
                         + Agregar pieza
                     </button>
                 </div>
 
+                <!-- =========================================================== -->
+                <!-- BOTÓN PRINCIPAL - OPTIMIZAR CORTES -->
+                <!-- =========================================================== -->
+                <!-- app.js → Event listener en setupEventListeners() -->
+                <!-- app.js → handleOptimize() se ejecuta al hacer clic -->
                 <div class="optimize-section mt-6">
                     <button id="optimizeBtn" class="optimize-btn">
                         Optimizar Cortes
@@ -67,25 +112,117 @@
                 </div>
             </div>
 
-            <!-- Panel de resultados -->
+            <!-- =========================================================== -->
+            <!-- PANEL DE RESULTADOS -->
+            <!-- =========================================================== -->
+            <!-- results-panel.css → Todos los estilos de este panel -->
             <div id="resultsPanel" class="results-panel">
                 <h2 class="text-xl font-semibold mb-4">Resultados de optimización</h2>
                 
+                <!-- =========================================================== -->
+                <!-- CONTENEDOR DE ESTADÍSTICAS - GESTIONADO POR renderer.js -->
+                <!-- =========================================================== -->
+                <!-- renderer.js → displayStatistics() actualiza este contenedor -->
+                <!-- renderer.js → showError() muestra errores aquí -->
+                <!-- renderer.js → showSuccess() muestra mensajes aquí -->
                 <div id="resultsContainer" class="results-container">
                     <p class="text-gray-600">Ingresa las piezas y haz clic en "Optimizar Cortes"</p>
                 </div>
                 
+                <!-- =========================================================== -->
+                <!-- CONTENEDOR DE VISUALIZACIÓN - GESTIONADO POR renderer.js -->
+                <!-- =========================================================== -->
+                <!-- renderer.js → displaySheets() inserta las placas aquí -->
+                <!-- renderer.js → createSheetElement() crea cada visualización -->
                 <div id="sheetsContainer" class="sheets-container">
-                    <!-- Las placas optimizadas se mostrarán aquí -->
+                    <!-- 
+                    ESTRUCTURA QUE SE INSERTA DINÁMICAMENTE:
+                    <div class="sheet-card">
+                        <div class="sheet-title">Placa 1 - Eficiencia: 85%</div>
+                        <div class="sheet-visualization">
+                            <div class="piece" style="...">300x200</div>
+                        </div>
+                    </div>
+                    -->
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Scripts de la aplicación -->
+    <!-- =========================================================== -->
+    <!-- SCRIPTS DE LA APLICACIÓN - ORDEN CRÍTICO POR DEPENDENCIAS -->
+    <!-- =========================================================== -->
+
+    <!-- piece-manager.js → GESTIÓN DE PIEZAS -->
+    <!-- 
+    FUNCIONALIDAD:
+    - addPiece(): Agrega nuevas filas al piecesContainer
+    - removePiece(): Elimina piezas específicas
+    - getAllPieces(): Recoge todos los datos de piezas
+    - isValidPiece(): Valida datos de cada pieza
+    
+    ELEMENTOS QUE CONTROL:
+    - #piecesContainer (inserta/elimina piezas)
+    - .piece-width, .piece-height, .piece-quantity, .piece-color (lee valores)
+    - .remove-piece (escucha eventos de eliminación)
+    -->
     <script src="js/piece-manager.js"></script>
+
+    <!-- optimizer.js → ALGORITMO DE OPTIMIZACIÓN -->
+    <!-- 
+    FUNCIONALIDAD:
+    - shelfAlgorithm(): Organiza piezas en placas
+    - sortPieces(): Ordena piezas para mejor optimización
+    - calculateStats(): Calcula estadísticas de eficiencia
+    
+    DATOS QUE USA:
+    - piece-manager.js → Recibe array de piezas de getAllPieces()
+    - app.js → Recibe sheetWidth y sheetHeight de los inputs
+    
+    ELEMENTOS QUE AFECTA:
+    - renderer.js → Proporciona array de sheets para visualización
+    -->
     <script src="js/optimizer.js"></script>
+
+    <!-- renderer.js → VISUALIZACIÓN DE RESULTADOS -->
+    <!-- 
+    FUNCIONALIDAD:
+    - displayResults(): Muestra resultados completos
+    - displayStatistics(): Actualiza el resultsContainer
+    - displaySheets(): Dibuja las placas en sheetsContainer
+    - createSheetElement(): Crea cada visualización de placa
+    
+    ELEMENTOS QUE CONTROL:
+    - #resultsContainer (estadísticas y mensajes)
+    - #sheetsContainer (visualización de placas)
+    
+    DATOS QUE USA:
+    - optimizer.js → Recibe array de sheets del algoritmo
+    -->
     <script src="js/renderer.js"></script>
+
+    <!-- app.js → COORDINADOR PRINCIPAL -->
+    <!-- 
+    FUNCIONALIDAD:
+    - init(): Inicializa toda la aplicación
+    - setupEventListeners(): Configura todos los eventos
+    - handleOptimize(): Orquesta todo el proceso de optimización
+    - validateInputs(): Valida datos antes de procesar
+    
+    EVENTOS QUE MANEJA:
+    - #addPiece (agregar piezas)
+    - #optimizeBtn (iniciar optimización)
+    - Enter en inputs (dispara optimización)
+    
+    COORDINACIÓN:
+    - Llama a PieceManager.getAllPieces()
+    - Llama a Optimizer.shelfAlgorithm()
+    - Llama a Renderer.displayResults()
+    
+    ELEMENTOS QUE LEE:
+    - #sheetWidth, #sheetHeight (configuración placa)
+    -->
     <script src="js/app.js"></script>
+
 </body>
 </html>
