@@ -1,5 +1,5 @@
 /**
- * ARCHIVO PRINCIPAL DE LA APLICACIÓN
+ * ARCHIVO PRINCIPAL DE LA APLICACIÓN - VERSIÓN MEJORADA
  * Cut Optimizer - Aplicación de optimización de cortes
  * Coordina todos los módulos y maneja la inicialización
  * 
@@ -7,23 +7,33 @@
  * 📍 UBICACIÓN EN EL FLUJO: Último archivo cargado, depende de todos los demás
  */
 
+// =============================================================================
+// CONFIGURACIÓN Y ESTADO
+// =============================================================================
+
 // Variables globales de la aplicación
 const App = {
-    // Configuración inicial
+    // Configuración inicial MEJORADA
     // ⚙️ ESTO NO ALTERA EL HTML: Son valores por defecto internos
     config: {
         defaultSheetWidth: 2440,    // Ancho por defecto de placa (2440mm = estándar)
         defaultSheetHeight: 1220,   // Alto por defecto de placa (1220mm = estándar)
-        maxSheetsToDisplay: 10      // Límite de placas a mostrar (para performance)
+        maxSheetsToDisplay: 10,     // Límite de placas a mostrar (para performance)
+        allowRotation: true         // ✅ NUEVO: Permitir rotación de piezas
     },
     
-    // Estado de la aplicación
+    // Estado de la aplicación MEJORADO
     // 💾 ESTO NO ALTERA EL HTML DIRECTAMENTE: Es el estado interno en memoria
     state: {
-        pieces: [],      // Aquí se guardan las piezas después del procesamiento
-        sheets: [],      // Aquí se guardan las placas optimizadas resultantes
-        isOptimizing: false  // Bandera para prevenir dobles ejecuciones
+        pieces: [],                 // Piezas procesadas
+        sheets: [],                 // Placas resultantes
+        isOptimizing: false,        // Previene dobles ejecuciones
+        problematicPieces: []       // ✅ NUEVO: Piezas que no pudieron colocarse
     },
+    
+    // =============================================================================
+    // INICIALIZACIÓN
+    // =============================================================================
     
     /**
      * Inicializa la aplicación
@@ -33,185 +43,232 @@ const App = {
     init: function() {
         console.log('🚀 Inicializando Cut Optimizer...');
         
-        // Inicializar módulos - NO altera HTML todavía, solo prepara
-        PieceManager.init();  // Prepara el gestor de piezas
-        Renderer.init();      // Prepara el renderizador (podría inicializar componentes visuales)
+        // Inicializar módulos - NO altera HTML todavía
+        PieceManager.init();
+        Renderer.init();
         
-        // Configurar event listeners - SÍ altera comportamiento HTML
-        this.setupEventListeners(); // Conecta botones con funciones
+        // Configurar event listeners
+        this.setupEventListeners();
         
         // Agregar primera pieza por defecto - SÍ altera HTML
-        PieceManager.addPiece(); // Inserta la primera fila de pieza en el formulario
+        PieceManager.addPiece();
         
         console.log('✅ Aplicación inicializada correctamente');
     },
     
     /**
      * Configura todos los event listeners de la aplicación
-     * 🔗 ESTE MÉTODO SÍ ALTERA COMPORTAMIENTO HTML: Hace que los elementos respondan a eventos
+     * 🔗 ESTE MÉTODO SÍ ALTERA COMPORTAMIENTO HTML
      */
     setupEventListeners: function() {
         // Botón para agregar piezas
-        // ✅ ALTERA COMPORTAMIENTO: Hace que el botón "+ Agregar pieza" funcione
         document.getElementById('addPiece').addEventListener('click', () => {
-            PieceManager.addPiece(); // Delega la acción al módulo especializado
+            PieceManager.addPiece();
         });
         
         // Botón de optimización
-        // ✅ ALTERA COMPORTAMIENTO: Hace que el botón "Optimizar Cortes" funcione
         document.getElementById('optimizeBtn').addEventListener('click', () => {
-            this.handleOptimize(); // Este es el corazón de la aplicación
+            this.handleOptimize();
         });
         
         // Enter en inputs numéricos también dispara optimización
-        // ✅ ALTERA COMPORTAMIENTO: Mejora UX permitiendo Enter para optimizar
         document.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && e.target.type === 'number') {
-                this.handleOptimize(); // Optimiza sin necesidad de hacer clic
+                this.handleOptimize();
             }
         });
     },
     
+    // =============================================================================
+    // PROCESO PRINCIPAL DE OPTIMIZACIÓN
+    // =============================================================================
+    
     /**
-     * Maneja el proceso de optimización
+     * Maneja el proceso de optimización - VERSIÓN MEJORADA
      * 🎯 ESTE ES EL MÉTODO MÁS IMPORTANTE: Orquesta todo el proceso
-     * ✅ SÍ ALTERA HTML: Cambia completamente el panel de resultados
      */
     handleOptimize: function() {
         console.log('🔄 Iniciando proceso de optimización...');
         
         // Prevenir múltiples optimizaciones simultáneas
-        // 🛡️ ESTO NO ALTERA HTML: Es una protección interna
         if (this.state.isOptimizing) {
             console.warn('⚠️ Optimización ya en progreso');
-            return; // Sale silenciosamente sin cambiar nada
+            return;
         }
         
-        this.state.isOptimizing = true; // Activa bandera de "trabajando"
+        this.state.isOptimizing = true;
+        this.state.problematicPieces = []; // ✅ NUEVO: Resetear piezas problemáticas
         
         try {
-            // 🔍 FASE 1: RECOLECCIÓN DE DATOS - Lee valores del HTML
-            // ✅ ALTERA COMPORTAMIENTO: Lee inputs del usuario
+            // 🔍 FASE 1: RECOLECCIÓN DE DATOS
             const sheetWidth = parseInt(document.getElementById('sheetWidth').value);
             const sheetHeight = parseInt(document.getElementById('sheetHeight').value);
             
-            // 🔍 FASE 2: VALIDACIÓN - Verifica que los datos sean correctos
-            // ✅ PUEDE ALTERAR HTML: Muestra mensajes de error si hay problemas
+            // 🔍 FASE 2: VALIDACIÓN
             if (!this.validateInputs(sheetWidth, sheetHeight)) {
-                return; // Si hay errores, se muestran y se detiene el proceso
+                return;
             }
             
-            // 🔍 FASE 3: OBTENER PIEZAS - Recoge todas las piezas del formulario
-            // ✅ INTERACTÚA CON HTML: Lee todas las filas de piezas
-            const pieces = PieceManager.getAllPieces();
+            // 🔍 FASE 3: OBTENER PIEZAS
+            let pieces = PieceManager.getAllPieces();
             
-            // Validación adicional: hay piezas para procesar?
             if (pieces.length === 0) {
                 Renderer.showError('❌ Agrega al menos una pieza para optimizar');
-                return; // Muestra error y detiene proceso
+                return;
             }
             
-            // 🔧 FASE 4: PROCESAMIENTO - Ejecuta el algoritmo de optimización
-            // 🧠 ESTO NO ALTERA HTML DIRECTAMENTE: Solo cálculos en memoria
-            this.state.sheets = Optimizer.shelfAlgorithm(pieces, sheetWidth, sheetHeight);
+            // ✅ NUEVO: Filtrar piezas que no caben NI ROTADAS
+            const filteredPieces = this.filterPiecesThatDontFit(pieces, sheetWidth, sheetHeight);
             
-            // 🎨 FASE 5: VISUALIZACIÓN - Muestra los resultados al usuario
-            // ✅ SÍ ALTERA HTML DRAMÁTICAMENTE: Cambia completamente el panel derecho
-            Renderer.displayResults(this.state.sheets, sheetWidth, sheetHeight);
+            if (filteredPieces.removedPieces.length > 0) {
+                pieces = filteredPieces.validPieces;
+                this.state.problematicPieces = filteredPieces.removedPieces;
+                this.showRemovedPiecesWarning(filteredPieces.removedPieces);
+            }
+            
+            // 🔧 FASE 4: PROCESAMIENTO - Ejecuta el algoritmo
+            const optimizationResult = Optimizer.shelfAlgorithm(
+                pieces, 
+                sheetWidth, 
+                sheetHeight, 
+                this.config.allowRotation
+            );
+            
+            this.state.sheets = optimizationResult.sheets;
+            
+            // ✅ NUEVO: Agregar piezas que no cupieron en ninguna placa
+            if (optimizationResult.unplacedPieces && optimizationResult.unplacedPieces.length > 0) {
+                this.state.problematicPieces = [
+                    ...this.state.problematicPieces,
+                    ...optimizationResult.unplacedPieces
+                ];
+            }
+            
+            // 🎨 FASE 5: VISUALIZACIÓN
+            Renderer.displayResults(
+                this.state.sheets, 
+                sheetWidth, 
+                sheetHeight, 
+                this.state.problematicPieces
+            );
             
             console.log(`✅ Optimización completada: ${this.state.sheets.length} placas utilizadas`);
+            if (this.state.problematicPieces.length > 0) {
+                console.warn(`⚠️ ${this.state.problematicPieces.length} piezas no pudieron colocarse`);
+            }
             
         } catch (error) {
-            // 🚨 FASE DE ERROR: Si algo sale mal en cualquier paso anterior
             console.error('❌ Error durante la optimización:', error);
             Renderer.showError('Error durante la optimización: ' + error.message);
-            // ✅ ALTERA HTML: Muestra mensaje de error en el panel de resultados
         } finally {
-            // 🔄 LIMPIEZA: Siempre se ejecuta, éxito o error
-            this.state.isOptimizing = false; // Libera la bandera de "trabajando"
+            this.state.isOptimizing = false;
         }
     },
     
+    // =============================================================================
+    // MÉTODOS NUEVOS Y AUXILIARES
+    // =============================================================================
+    
     /**
-     * Valida las entradas del usuario
-     * @param {number} sheetWidth - Ancho de la placa
-     * @param {number} sheetHeight - Alto de la placa
-     * @returns {boolean} True si las entradas son válidas
-     * ✅ PUEDE ALTERAR HTML: Muestra mensajes de error cuando encuentra problemas
+     * ✅ NUEVO: Filtra piezas que no caben ni rotadas
      */
-    validateInputs: function(sheetWidth, sheetHeight) {
-        // Validar tamaño de placa
-        // 🚫 Si el ancho no es válido...
-        if (isNaN(sheetWidth) || sheetWidth <= 0) {
-            Renderer.showError('❌ El ancho de la placa debe ser un número positivo');
-            return false; // Detiene el proceso y muestra error
-        }
+    filterPiecesThatDontFit: function(pieces, sheetWidth, sheetHeight) {
+        const validPieces = [];
+        const removedPieces = [];
         
-        // 🚫 Si el alto no es válido...
-        if (isNaN(sheetHeight) || sheetHeight <= 0) {
-            Renderer.showError('❌ El alto de la placa debe ser un número positivo');
-            return false; // Detiene el proceso y muestra error
-        }
-        
-        // Validar piezas individuales
-        const pieces = PieceManager.getAllPieces();
         for (const piece of pieces) {
-            // 🚫 Si alguna pieza es más grande que la placa...
-            if (piece.width > sheetWidth || piece.height > sheetHeight) {
-                Renderer.showError(`❌ La pieza ${piece.width}x${piece.height}mm es más grande que la placa`);
-                return false; // Detiene el proceso y muestra error específico
+            const fitsNormal = piece.width <= sheetWidth && piece.height <= sheetHeight;
+            const fitsRotated = piece.height <= sheetWidth && piece.width <= sheetHeight;
+            
+            if (fitsNormal || fitsRotated) {
+                validPieces.push(piece);
+            } else {
+                removedPieces.push({
+                    ...piece,
+                    reason: `No cabe en la placa ni rotada (${piece.width}x${piece.height}mm vs placa ${sheetWidth}x${sheetHeight}mm)`
+                });
             }
         }
         
-        return true; // ✅ Todo está bien, puede continuar
+        return { validPieces, removedPieces };
+    },
+    
+    /**
+     * ✅ NUEVO: Muestra advertencia sobre piezas removidas
+     */
+    showRemovedPiecesWarning: function(removedPieces) {
+        let warningMessage = `⚠️ Se removieron ${removedPieces.length} piezas que no caben en la placa:\n`;
+        
+        removedPieces.forEach((piece, index) => {
+            warningMessage += `\n${index + 1}. Pieza ${piece.width}x${piece.height}mm - ${piece.reason}`;
+        });
+        
+        warningMessage += "\n\nSe optimizarán las piezas restantes.";
+        
+        alert(warningMessage); // 🚨 En el futuro puede reemplazarse por modal
+    },
+    
+    // =============================================================================
+    // VALIDACIÓN Y UTILIDADES
+    // =============================================================================
+    
+    /**
+     * Valida las entradas del usuario - VERSIÓN MEJORADA
+     */
+    validateInputs: function(sheetWidth, sheetHeight) {
+        if (isNaN(sheetWidth) || sheetWidth <= 0) {
+            Renderer.showError('❌ El ancho de la placa debe ser un número positivo');
+            return false;
+        }
+        
+        if (isNaN(sheetHeight) || sheetHeight <= 0) {
+            Renderer.showError('❌ El alto de la placa debe ser un número positivo');
+            return false;
+        }
+        
+        // ✅ Validar rango de tamaño razonable
+        if (sheetWidth < 100 || sheetHeight < 100) {
+            Renderer.showError('❌ El tamaño mínimo de placa es 100x100mm');
+            return false;
+        }
+        
+        if (sheetWidth > 10000 || sheetHeight > 10000) {
+            Renderer.showError('❌ El tamaño máximo de placa es 10000x10000mm');
+            return false;
+        }
+        
+        return true;
     },
     
     /**
      * Obtiene el estado actual de la aplicación
-     * @returns {Object} Estado de la aplicación
-     * 🔍 ESTO NO ALTERA HTML: Solo lectura del estado interno
-     * 🎯 ÚTIL PARA: Debugging o extensiones futuras
      */
     getState: function() {
-        return { ...this.state }; // Devuelve copia para no modificar el original
+        return { ...this.state };
     },
     
     /**
      * Reinicia la aplicación al estado inicial
-     * 🔄 ESTE MÉTODO SÍ ALTERA HTML: Limpia formularios y resultados
-     * 🎯 ÚTIL PARA: Botón "Nuevo proyecto" en el futuro
      */
     reset: function() {
-        // Limpia el estado interno
         this.state.pieces = [];
         this.state.sheets = [];
         this.state.isOptimizing = false;
+        this.state.problematicPieces = [];
         
-        // Limpia la interfaz delegando a los módulos especializados
-        PieceManager.reset();    // Limpia todas las piezas del formulario
-        Renderer.clearResults(); // Limpia el panel de resultados
+        PieceManager.reset();
+        Renderer.clearResults();
         
         console.log('🔄 Aplicación reiniciada');
     }
 };
 
 // =============================================================================
-// INICIALIZACIÓN AUTOMÁTICA - ESTO SÍ EJECUTA CÓDIGO QUE ALTERA EL HTML
+// INICIALIZACIÓN AUTOMÁTICA
 // =============================================================================
 
-/**
- * Inicializar la aplicación cuando el DOM esté listo
- * 🚀 ESTO SÍ ALTERA HTML: Ejecuta App.init() que configura toda la interfaz
- * 📍 SE EJECUTA: Automáticamente cuando el navegador termina de cargar la página
- */
 document.addEventListener('DOMContentLoaded', function() {
-    App.init(); // ¡Aquí es donde realmente comienza la magia!
+    App.init(); // 🚀 Aquí empieza la magia
 });
 
-/**
- * Hacer App disponible globalmente para debugging
- * 🔧 ESTO NO ALTERA HTML: Solo hace que App sea accesible desde la consola
- * 🎯 ÚTIL PARA: Desarrolladores que quieren probar cosas en la consola
- * Ejemplo: En consola escribir "App.getState()" para ver el estado actual
- */
-window.App = App;
+window.App = App; // 🔧 Disponible globalmente para debugging
